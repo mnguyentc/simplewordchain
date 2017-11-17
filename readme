@@ -1,0 +1,188 @@
+Technology Specialist Recruiting - Exam 2A
+
+Code this following question with consideration of exception handling for abnormality. We will ask you about this question in interview.
+
+2A-1
+
+Implement framework for "Simple Word Chain".
+2A-2
+
+Implement one strategy (AI) to run on framework for "Simple Word Chain".
+2A-3 (option)
+
+Please write to answer.md about the developed products / deliverables you created.
+
+Rules of "Simple Word Chain"
+
+Rules of "Simple Word Chain" are as following.
+
+There are always two players. Their turns come alternately.
+At a player's turn, set of available words and the other player's most recent answer are given to the player.
+At the first turn for the player to answer first, strings equivalent to the other player's most recent answer is given.
+The player should return a word beginning with the last character of the other player's most recent answer. The word must be chosen from the set of words given.
+Returned word is eliminated from the set of words whenever the player returns. Thus, the more turns come, the less words are available.
+A player loses if s/he does one of the following; the other one wins.
+S/he returns the word not beginning with the last character of the other player's most recent answer.
+S/he returns a word not included in the set of words at that time.
+S/he returns other invalid answers.
+Example of initial word group : ["internet", "tail", "grep", "less", "telnet", "sed"] Example of game from "shiritori": "shiritori" → "internet" → "tail" → "less" → ・・・
+Program Specification
+
+※ $ means Prompt string. ※ ˽ means One-byte space.
+basic specifications (2A-1、2A-2)
+
+Develop your application in the language we have told you. Also, you can develop additional one in a language (regardless of codecheck compatibility) you would like to.
+
+Your program is to be built with this following command. Edit ./build.sh if necessary, in order that it is built appropriately.
+
+$ ./build.sh
+
+Both programs of 2A-1 and 2A-2 should be built by running ./build.sh
+
+If you write it in Java, the project is to be built with Apache Maven by default. However, you can also use Apache Ant or javac command.
+
+We prepare the templates of project for Java, Python, and NodeJS. You can modify the template and/or directory structure of the project if necessary.
+
+If you write it in a non-codecheck-compatible language, you cannot check running of ./build.sh, etc, on codecheck,
+
+If you answer this assignment in multiple programming languages, leave ./build.sh and ./run.sh Java-enabled, and others commented out. We will judge them in the interview.
+
+Implementation example of Java / NodeJS (JavaScript) 
+
+* ./build.sh
+
+    ```bash
+    ROOT=$(cd $(dirname $0) && pwd)
+
+    ### Java ###
+    cd $ROOT/java/fw
+    mvn package -Dmaven.test.skip=true
+    cd $ROOT/java/ai
+    mvn package -Dmaven.test.skip=true
+    ```
+
+* ./run.sh
+
+    ```bash
+    #!/bin/bash
+
+    ROOT=$(cd $(dirname $0) && pwd)
+
+    ### Java ###
+    java -jar $(ls $ROOT/java/fw/target/exam2a-framework-*.jar) "$@"
+
+    ### NodeJS ###
+    # cd $(dirname $0)/js
+    # node $ROOT/nodejs/src/exam2a-fw.js "$@"
+    ```
+
+* ./ai.sh
+
+    ```bash
+    #!/bin/bash
+
+    ROOT=$(cd $(dirname $0) && pwd)
+
+    ### Java ###
+    java -jar $(ls $ROOT/java/ai/target/exam2a-ai-*.jar) "$@"
+
+    ### NodeJS ###
+    # cd $(dirname $0)/js
+    # node $ROOT/nodejs/src/exam2a-ai.js "$@"
+    ```
+Characters to be used for input (can be used for words) are any characters expressed in environment-standard (e.g. those got with LANG environment variable in Linux), excluding these following.
+
+Control characters in Unicode (U+0000 thru to U+001F, U+007F thru to U+009F) and their equivalents.
+Characters expressed as a ligature, by synthesizing multiple characters, including NFC non-normalized form and variation selector.
+You can output anything to standard error output, regardless of normal or abnormal end of the program (to be ignored).
+
+For the specification not specified here, set what you think appropriate.
+
+It is okay to include no or one return code after the last line when to output to standard output.
+
+Example:
+
+```bash
+$ ./ai.sh shiritori internet tail grep less telnet sed
+internet$
+```
+
+```bash
+$ ./ai.sh shiritori internet tail grep less telnet sed
+internet
+$
+```
+Assume both of those two outputs are valid, and returned a word "internet".
+
+The maximum number of words to input is 1000. Each word must not exceed 10,000 characters. In each test case, if the program does not finish within 5 seconds, automatic test will be aborted.
+
+Set of words to be passed as arguments in each test case can be normally processed within 1 second.
+
+Exam 2A-1
+
+The program of the framework shall be executed with the following command.
+
+$ ./run.sh <First AI launch program > <Second attack AI launch program > <Start word> <Word group>
+Example:
+
+$ ./run.sh ./ai.sh ./ai.sh shiritori internet tail grep less telnet sed
+AI startup program is passed as an absolute path or a relative path from the directory that contains ./run.sh.
+
+In addition to ./ai.sh you are to implement in Question 2A-2, arbitrary AI program specified in argument should start. Then, argument to be passed to the AI program is equivalent to ./ai.sh.
+
+Handle the starting word as not to be included in the set of words. If the starting word is included in the set, you must not eliminate the starting word from the set at the first turn of the player to answer first.
+
+You can end framework as an abnormal end if the runtime arguments do not fulfill the specification, or errors that program cannot avoid, such as OutOfMemoryError, occurs. If it is the case, it should return other than 0 as end code.
+
+Otherwise, it should end as normal end, output win/lose result, and return 0 as end code.
+
+Output AI results to standard output.
+
+Example:
+
+$ ./run.sh ./ai.sh ./ai.sh shiritori internet tail grep less telnet sed
+FIRST˽(OK):˽internet
+SECOND˽(OK):˽tail
+FIRST˽(OK):˽less
+SECOND˽(OK):˽sed
+FIRST˽(NG):˽damn
+WIN˽-˽SECOND
+The format of each column is as follows.
+
+In the match
+
+  <First and Second Attack>˽(<Judge>):˽<word>
+First/Second: Player to answer first is "FIRST", the other one is "SECOND".
+Judgment: "OK" for valid answers, "NG" for invalid ones.
+Word: Regardless the answer is valid or invalid, output what AI program has output to standard output as it is.
+
+Invalid answers without output are to be output as following.
+
+FIRST˽(NG):˽
+Output from AI program must not output the return at the end of the last line. In other words, as long as the AI program answers valid answers, there must not be empty line at the end.
+
+Each item should be divided with one half-width space (described as ˽ here). Except for cases as shown above, extra half-width spaces must not be output at the beginning or end of the line.
+
+First/Second: Player to answer first is "FIRST", the other one is "SECOND".
+
+Example:
+
+  WIN˽-˽FIRST
+It is displayed right next to an invalid answer.
+
+For input/output format of AI program, we show you in the next chapter. Start the program appropriately.
+
+Exam 2A-2
+
+The AI startup program shall be executed as follows.
+
+  $ ./ai.sh <Answer of the last opponent > <word group>
+Example:
+
+  $ ./ai.sh shiritori internet tail grep less telnet less sed
+Output of the program shall be done via standard output. To make a valid answer, the program outputs only one answer on one line and returns an exit code of 0.
+
+Example:
+
+  $ ./ai.sh shiritori internet tail grep less telnet less sed
+  internet
